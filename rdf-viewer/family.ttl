@@ -1,0 +1,48 @@
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix rel:    <http://purl.org/vocab/relationship/> .
+@prefix fam:    <http://example.org/family#> .
+
+# People
+fam:Mother    a foaf:Person ; foaf:name "Mother" ; foaf:gender "female" .
+fam:Father    a foaf:Person ; foaf:name "Father" ; foaf:gender "male" .
+fam:BoyA      a foaf:Person ; foaf:name "BoyA"   ; foaf:gender "male" .
+fam:BoyB      a foaf:Person ; foaf:name "BoyB"   ; foaf:gender "male" .
+
+fam:MaternalGrandmother  a foaf:Person ; foaf:name "Maternal Grandmother" ; foaf:gender "female" .
+fam:MaternalGrandfather  a foaf:Person ; foaf:name "Maternal Grandfather" ; foaf:gender "male" .
+fam:PaternalGrandmother  a foaf:Person ; foaf:name "Paternal Grandmother" ; foaf:gender "female" .
+fam:PaternalGrandfather  a foaf:Person ; foaf:name "Paternal Grandfather" ; foaf:gender "male" .
+
+# Marriage
+fam:Mother  rel:spouseOf  fam:Father .
+fam:Father  rel:spouseOf  fam:Mother .
+
+# Parent → child
+fam:Mother  rel:parentOf  fam:BoyA .
+fam:Mother  rel:parentOf  fam:BoyB .
+fam:Father  rel:parentOf  fam:BoyA .
+fam:Father  rel:parentOf  fam:BoyB .
+
+# Child → parent (inverse)
+fam:BoyA  rel:childOf  fam:Mother .
+fam:BoyA  rel:childOf  fam:Father .
+fam:BoyB  rel:childOf  fam:Mother .
+fam:BoyB  rel:childOf  fam:Father .
+
+# Siblings
+fam:BoyA  rel:siblingOf  fam:BoyB .
+fam:BoyB  rel:siblingOf  fam:BoyA .
+
+# Mother's parents
+fam:MaternalGrandmother  rel:parentOf  fam:Mother .
+fam:MaternalGrandfather  rel:parentOf  fam:Mother .
+fam:Mother  rel:childOf  fam:MaternalGrandmother .
+fam:Mother  rel:childOf  fam:MaternalGrandfather .
+
+# Father's parents
+fam:PaternalGrandmother  rel:parentOf  fam:Father .
+fam:PaternalGrandfather  rel:parentOf  fam:Father .
+fam:Father  rel:childOf  fam:PaternalGrandmother .
+fam:Father  rel:childOf  fam:PaternalGrandfather .

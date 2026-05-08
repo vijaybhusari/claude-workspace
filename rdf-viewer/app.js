@@ -1,6 +1,8 @@
-const LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
-const TYPE_PRED  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-const SUBCLASS   = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+const LABEL_PRED  = "http://www.w3.org/2000/01/rdf-schema#label";
+const FOAF_NAME   = "http://xmlns.com/foaf/0.1/name";
+const TYPE_PRED   = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+const SUBCLASS    = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+const LABEL_PREDS = new Set([LABEL_PRED, FOAF_NAME]);
 
 let cy = null;
 
@@ -45,10 +47,10 @@ function parseAndRender(content) {
         return;
     }
 
-    // Build label map from rdfs:label triples
+    // Build label map from rdfs:label and foaf:name triples
     const labels = {};
     quads.forEach(q => {
-        if (q.predicate.value === LABEL_PRED && q.object.termType === "Literal") {
+        if (LABEL_PREDS.has(q.predicate.value) && q.object.termType === "Literal") {
             labels[q.subject.value] = q.object.value;
         }
     });
@@ -62,7 +64,7 @@ function parseAndRender(content) {
         const o = q.object.value;
 
         if (q.subject.termType === "BlankNode" || q.object.termType === "BlankNode") return;
-        if (p === LABEL_PRED) return; // labels are shown on nodes, not as edges
+        if (LABEL_PREDS.has(p)) return; // labels are shown on nodes, not as edges
         if (q.object.termType === "Literal") return; // skip literal-only triples for now
 
         nodeSet.add(s);
