@@ -11,16 +11,37 @@ function shortName(uri) {
     return uri.slice(Math.max(hash, slash) + 1) || uri;
 }
 
+function showError(msg) {
+    document.getElementById("detail-content").innerHTML =
+        `<p style="color:#f87171;font-weight:600">Error</p><p style="color:#cbd5e1;margin-top:6px;word-break:break-word">${msg}</p>`;
+}
+
 function parseAndRender(content) {
+    if (typeof N3 === "undefined") {
+        showError("N3.js failed to load. Check your internet connection.");
+        return;
+    }
+    if (typeof cytoscape === "undefined") {
+        showError("Cytoscape.js failed to load. Check your internet connection.");
+        return;
+    }
+
     const parser = new N3.Parser({ format: "Turtle" });
     const quads = [];
-    try {
-        parser.parse(content, (err, quad) => {
-            if (err) throw err;
-            if (quad) quads.push(quad);
-        });
-    } catch (e) {
-        alert("Parse error: " + e.message);
+    let parseError = null;
+
+    parser.parse(content, (err, quad) => {
+        if (err) { parseError = err; return; }
+        if (quad) quads.push(quad);
+    });
+
+    if (parseError) {
+        showError("Parse error: " + parseError.message);
+        return;
+    }
+
+    if (quads.length === 0) {
+        showError("No triples found. Make sure the file is valid Turtle (.ttl) format.");
         return;
     }
 
@@ -128,11 +149,11 @@ function parseAndRender(content) {
             }
         ],
         layout: {
-            name: "cose",
+            name: "breadthfirst",
             animate: true,
-            nodeRepulsion: 8000,
-            idealEdgeLength: 120,
-            gravity: 0.5
+            directed: false,
+            padding: 30,
+            spacingFactor: 1.4
         }
     });
 
@@ -174,10 +195,6 @@ function loadFile(file) {
 
 document.addEventListener("DOMContentLoaded", () => {
     clearDetail();
-
-    document.getElementById("upload-btn").addEventListener("click", () => {
-        document.getElementById("file-input").click();
-    });
 
     document.getElementById("file-input").addEventListener("change", e => {
         if (e.target.files[0]) loadFile(e.target.files[0]);

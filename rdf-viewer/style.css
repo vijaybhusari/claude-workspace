@@ -34,6 +34,7 @@ header h1 {
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
+    user-select: none;
 }
 
 #upload-btn:hover { background: #6d28d9; }

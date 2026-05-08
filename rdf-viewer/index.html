@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RDF / OWL Graph Viewer</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
-    <script src="https://unpkg.com/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/n3@1.17.3/browser/n3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
 </head>
 <body>
 
 <header>
     <h1>RDF / OWL Graph Viewer</h1>
-    <button id="upload-btn">Load File</button>
+    <label id="upload-btn" for="file-input">Load File</label>
+    <input type="file" id="file-input" accept=".ttl,.owl,.n3,.rdf">
     <span id="filename">No file loaded</span>
     <span id="stats"></span>
 </header>
