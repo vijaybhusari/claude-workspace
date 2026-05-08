@@ -1,0 +1,128 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    padding: 14px 20px;
+    background: #1a1d27;
+    border-bottom: 1px solid #2d3148;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+header h1 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #a78bfa;
+}
+
+#upload-btn {
+    padding: 6px 14px;
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+#upload-btn:hover { background: #6d28d9; }
+
+#file-input { display: none; }
+
+#filename {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+#stats {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-left: auto;
+}
+
+#main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+#cy {
+    flex: 1;
+    background: #0f1117;
+}
+
+#sidebar {
+    width: 260px;
+    background: #1a1d27;
+    border-left: 1px solid #2d3148;
+    overflow-y: auto;
+    padding: 16px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+#sidebar h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+#detail-content p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    word-break: break-all;
+}
+
+#detail-content .label {
+    font-weight: 600;
+    color: #a78bfa;
+}
+
+#detail-content .value {
+    color: #cbd5e1;
+}
+
+#drop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(124, 58, 237, 0.15);
+    border: 3px dashed #7c3aed;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #a78bfa;
+    font-weight: 600;
+}
+
+#drop-overlay.active { display: flex; }
+
+#empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #334155;
+    pointer-events: none;
+}
+
+#empty-state svg { opacity: 0.3; }
+#empty-state p { font-size: 0.9rem; }

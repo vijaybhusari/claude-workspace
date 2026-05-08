@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDF / OWL Graph Viewer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
+    <script src="https://unpkg.com/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>RDF / OWL Graph Viewer</h1>
+    <button id="upload-btn">Load File</button>
+    <span id="filename">No file loaded</span>
+    <span id="stats"></span>
+</header>
+
+<div id="drop-overlay">Drop your .ttl / .owl file here</div>
+
+<div id="main">
+    <div id="cy">
+        <div id="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="6"  cy="6"  r="2" fill="currentColor"/>
+                <circle cx="18" cy="6"  r="2" fill="currentColor"/>
+                <circle cx="12" cy="18" r="2" fill="currentColor"/>
+                <line x1="6" y1="6" x2="18" y2="6"/>
+                <line x1="6" y1="6" x2="12" y2="18"/>
+                <line x1="18" y1="6" x2="12" y2="18"/>
+            </svg>
+            <p>Load a .ttl or .owl (Turtle) file to visualize the graph</p>
+            <p>or drag &amp; drop it anywhere on the page</p>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <h2>Inspector</h2>
+        <div id="detail-content"></div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
