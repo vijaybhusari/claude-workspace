@@ -30,139 +30,113 @@ function parseAndRender(content) {
 
     const parser = new N3.Parser({ format: "Turtle" });
     const quads = [];
-    let parseError = null;
 
     parser.parse(content, (err, quad) => {
-        if (err) { parseError = err; return; }
-        if (quad) quads.push(quad);
-    });
-
-    if (parseError) {
-        showError("Parse error: " + parseError.message);
-        return;
-    }
-
-    if (quads.length === 0) {
-        showError("No triples found. Make sure the file is valid Turtle (.ttl) format.");
-        return;
-    }
-
-    // Build label map from rdfs:label and foaf:name triples
-    const labels = {};
-    quads.forEach(q => {
-        if (LABEL_PREDS.has(q.predicate.value) && q.object.termType === "Literal") {
-            labels[q.subject.value] = q.object.value;
+        if (err) {
+            showError("Parse error: " + err.message);
+            return;
         }
-    });
-
-    const nodeSet = new Set();
-    const edges = [];
-
-    quads.forEach(q => {
-        const s = q.subject.value;
-        const p = q.predicate.value;
-        const o = q.object.value;
-
-        if (q.subject.termType === "BlankNode" || q.object.termType === "BlankNode") return;
-        if (LABEL_PREDS.has(p)) return; // labels are shown on nodes, not as edges
-        if (q.object.termType === "Literal") return; // skip literal-only triples for now
-
-        nodeSet.add(s);
-        nodeSet.add(o);
-        edges.push({ s, p, o });
-    });
-
-    const nodes = [...nodeSet].map(uri => ({
-        data: {
-            id: uri,
-            label: labels[uri] || shortName(uri),
-            uri
+        if (quad) {
+            quads.push(quad);
+            return;
         }
-    }));
 
-    const edgeEls = edges.map((e, i) => ({
-        data: {
-            id: `e${i}`,
-            source: e.s,
-            target: e.o,
-            label: shortName(e.p),
-            predicate: e.p
+        // quad === null signals parsing is complete
+        if (quads.length === 0) {
+            showError("No triples found. Make sure the file is valid Turtle (.ttl) format.");
+            return;
         }
-    }));
 
-    document.getElementById("stats").textContent =
-        `${nodes.length} nodes · ${edgeEls.length} edges · ${quads.length} triples`;
-
-    document.getElementById("empty-state").style.display = "none";
-
-    if (cy) cy.destroy();
-
-    cy = cytoscape({
-        container: document.getElementById("cy"),
-        elements: { nodes, edges: edgeEls },
-        style: [
-            {
-                selector: "node",
-                style: {
-                    "background-color": "#7c3aed",
-                    "label": "data(label)",
-                    "color": "#e2e8f0",
-                    "text-valign": "center",
-                    "text-halign": "center",
-                    "font-size": "11px",
-                    "width": "label",
-                    "height": "label",
-                    "padding": "10px",
-                    "shape": "round-rectangle",
-                    "text-wrap": "wrap",
-                    "text-max-width": "120px"
-                }
-            },
-            {
-                selector: "node:selected",
-                style: {
-                    "background-color": "#a78bfa",
-                    "border-width": 2,
-                    "border-color": "#fff"
-                }
-            },
-            {
-                selector: "edge",
-                style: {
-                    "width": 1.5,
-                    "line-color": "#334155",
-                    "target-arrow-color": "#334155",
-                    "target-arrow-shape": "triangle",
-                    "curve-style": "bezier",
-                    "label": "data(label)",
-                    "font-size": "9px",
-                    "color": "#64748b",
-                    "text-background-color": "#0f1117",
-                    "text-background-opacity": 1,
-                    "text-background-padding": "2px"
-                }
-            },
-            {
-                selector: "edge:selected",
-                style: {
-                    "line-color": "#7c3aed",
-                    "target-arrow-color": "#7c3aed"
-                }
+        const labels = {};
+        quads.forEach(q => {
+            if (LABEL_PREDS.has(q.predicate.value) && q.object.termType === "Literal") {
+                labels[q.subject.value] = q.object.value;
             }
-        ],
-        layout: {
-            name: "breadthfirst",
-            animate: true,
-            directed: false,
-            padding: 30,
-            spacingFactor: 1.4
-        }
-    });
+        });
 
-    cy.on("tap", "node", evt => showDetail("node", evt.target.data()));
-    cy.on("tap", "edge", evt => showDetail("edge", evt.target.data()));
-    cy.on("tap", evt => {
-        if (evt.target === cy) clearDetail();
+        const nodeSet = new Set();
+        const edges = [];
+
+        quads.forEach(q => {
+            const s = q.subject.value;
+            const p = q.predicate.value;
+            const o = q.object.value;
+
+            if (q.subject.termType === "BlankNode" || q.object.termType === "BlankNode") return;
+            if (LABEL_PREDS.has(p)) return;
+            if (q.object.termType === "Literal") return;
+
+            nodeSet.add(s);
+            nodeSet.add(o);
+            edges.push({ s, p, o });
+        });
+
+        const nodes = [...nodeSet].map(uri => ({
+            data: { id: uri, label: labels[uri] || shortName(uri), uri }
+        }));
+
+        const edgeEls = edges.map((e, i) => ({
+            data: { id: `e${i}`, source: e.s, target: e.o, label: shortName(e.p), predicate: e.p }
+        }));
+
+        document.getElementById("stats").textContent =
+            `${nodes.length} nodes · ${edgeEls.length} edges · ${quads.length} triples`;
+        document.getElementById("empty-state").style.display = "none";
+
+        if (cy) cy.destroy();
+
+        cy = cytoscape({
+            container: document.getElementById("cy"),
+            elements: { nodes, edges: edgeEls },
+            style: [
+                {
+                    selector: "node",
+                    style: {
+                        "background-color": "#7c3aed",
+                        "label": "data(label)",
+                        "color": "#e2e8f0",
+                        "text-valign": "center",
+                        "text-halign": "center",
+                        "font-size": "11px",
+                        "width": "label",
+                        "height": "label",
+                        "padding": "10px",
+                        "shape": "round-rectangle",
+                        "text-wrap": "wrap",
+                        "text-max-width": "120px"
+                    }
+                },
+                {
+                    selector: "node:selected",
+                    style: { "background-color": "#a78bfa", "border-width": 2, "border-color": "#fff" }
+                },
+                {
+                    selector: "edge",
+                    style: {
+                        "width": 1.5,
+                        "line-color": "#334155",
+                        "target-arrow-color": "#334155",
+                        "target-arrow-shape": "triangle",
+                        "curve-style": "bezier",
+                        "label": "data(label)",
+                        "font-size": "9px",
+                        "color": "#64748b",
+                        "text-background-color": "#0f1117",
+                        "text-background-opacity": 1,
+                        "text-background-padding": "2px"
+                    }
+                },
+                {
+                    selector: "edge:selected",
+                    style: { "line-color": "#7c3aed", "target-arrow-color": "#7c3aed" }
+                }
+            ],
+            layout: { name: "breadthfirst", animate: true, directed: false, padding: 30, spacingFactor: 1.4 }
+        });
+
+        cy.on("tap", "node", evt => showDetail("node", evt.target.data()));
+        cy.on("tap", "edge", evt => showDetail("edge", evt.target.data()));
+        cy.on("tap", evt => { if (evt.target === cy) clearDetail(); });
     });
 }
 
